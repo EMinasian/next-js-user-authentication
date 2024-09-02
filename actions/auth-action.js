@@ -1,4 +1,7 @@
 'use server'
+import { redirect } from 'next/navigation'
+import { createUser } from '../lib/user';
+import { hashUserPassword } from '@/lib/hash';
 
 export default async function authAction(currentState, formData) {
     const errors = {}
@@ -10,11 +13,25 @@ export default async function authAction(currentState, formData) {
 
     if(emailSections[0]?.length < 8 || emailSections[1]?.length < 5 || !EMAIL_PATTERN.test(email)) {
         errors.email = "Invalid email address!"
+        return {errors}
     }
 
     if (password?.trim()?.length < 8) {
         errors.password = "Password must be at least 8 characters long."
+        return {errors}
     }
 
-    return {errors}
+    const hasedPassword = hashUserPassword(password)
+
+    try {
+        const userId = createUser(email, hasedPassword)
+    } catch (error) {
+        if (error.code === 'SQLITE_CONSTRAINT_UNIQUE') {
+            errors.password = "The email is already associated with an account."
+            return {errors}
+        }
+        throw error
+    }
+    
+    redirect('/training')
 }
