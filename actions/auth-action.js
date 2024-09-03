@@ -2,6 +2,7 @@
 import { redirect } from 'next/navigation'
 import { createUser } from '../lib/user';
 import { hashUserPassword } from '@/lib/hash';
+import { createAuthSession } from '@/lib/auth';
 
 export default async function authAction(currentState, formData) {
     const errors = {}
@@ -22,9 +23,10 @@ export default async function authAction(currentState, formData) {
     }
 
     const hasedPassword = hashUserPassword(password)
-
     try {
         const userId = createUser(email, hasedPassword)
+        await createAuthSession(userId)
+        redirect('/training')
     } catch (error) {
         if (error.code === 'SQLITE_CONSTRAINT_UNIQUE') {
             errors.password = "The email is already associated with an account."
@@ -32,6 +34,4 @@ export default async function authAction(currentState, formData) {
         }
         throw error
     }
-    
-    redirect('/training')
 }
