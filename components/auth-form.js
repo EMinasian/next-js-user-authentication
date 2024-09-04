@@ -1,7 +1,7 @@
 "use client"
 
 import Link from 'next/link';
-import { registerationAction, loginActon } from '@/actions/auth-action';
+import authAction from '@/actions/auth-action';
 // import { useActionState } from "react";
 import { useFormState } from 'react-dom';
 import { useSearchParams } from 'next/navigation'
@@ -12,7 +12,7 @@ export default function AuthForm() {
   const searchParams = useSearchParams()
   const accessMode = searchParams.get('mode')
 
-  const [state, formAction] = useFormState(accessMode === 'login' ? loginActon : registerationAction, {});
+  const [state, formAction] = useFormState(authAction.bind(null, accessMode), {});
 
   return (
     <form id="auth-form" action={formAction}>
@@ -28,9 +28,9 @@ export default function AuthForm() {
         <input type="password" name="password" id="password" />
       </p>
       {
-        state.errors && (
+        state?.errors && (
           <ul id="form-errors">
-            {Object.entries(state.errors).map(([key, value]) => <li key={key}>{value}</li>)}
+            {Object.entries(state?.errors).map(([key, value]) => <li key={key}>{value}</li>)}
           </ul>
         )
       }
