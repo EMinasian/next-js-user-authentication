@@ -1,15 +1,18 @@
 "use client"
 
 import Link from 'next/link';
-import authAction from '@/actions/auth-action';
+import { registerationAction, loginActon } from '@/actions/auth-action';
 // import { useActionState } from "react";
 import { useFormState } from 'react-dom';
+import { useSearchParams } from 'next/navigation'
 
 
 export default function AuthForm() {
 
+  const searchParams = useSearchParams()
+  const accessMode = searchParams.get('mode')
 
-  const [state, formAction] = useFormState(authAction, {});
+  const [state, formAction] = useFormState(accessMode === 'login' ? loginActon : registerationAction, {});
 
   return (
     <form id="auth-form" action={formAction}>
@@ -33,11 +36,17 @@ export default function AuthForm() {
       }
       <p>
         <button type="submit">
-          Create Account
+          {`${accessMode === 'login' ? 'Login' : 'Create Account'}`}
         </button>
       </p>
       <p>
-        <Link href="/">Login with existing account.</Link>
+        {
+          accessMode === 'login' ? (
+            <Link href="/">Create new account.</Link>
+          ) : (
+            <Link href="/?mode=login">Login with existing account.</Link>
+          )
+        }  
       </p>
     </form>
   );

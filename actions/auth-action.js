@@ -1,10 +1,10 @@
 'use server'
 import { redirect } from 'next/navigation'
-import { createUser } from '../lib/user';
-import { hashUserPassword } from '@/lib/hash';
+import { createUser, getUserByEmail } from '../lib/user';
+import { hashUserPassword, verifyPassword } from '@/lib/hash';
 import { createAuthSession } from '@/lib/auth';
 
-export default async function authAction(currentState, formData) {
+export async function registerationAction(currentState, formData) {
     const errors = {}
     const email = formData.get('email')
     const password = formData.get('password')
@@ -34,4 +34,27 @@ export default async function authAction(currentState, formData) {
         }
         throw error
     }
+}
+
+export async function loginActon(currentState, formData) {
+    const errors = {}
+    const email = formData.get('email')
+    const password = formData.get('password')
+
+    const existingUser = getUserByEmail(email)
+
+    if (!existingUser) {
+        errors.noUser = "The user does not exist."
+        return {errors}
+    }
+
+    const isVerfied = verifyPassword(existingUser.password, password)
+    
+    if (!isVerfied) {
+        errors.passwrod = "The passwrod is incorrect."
+        return {errors}
+    }
+
+    await createAuthSession(existingUser.id)
+    redirect('/training')
 }
