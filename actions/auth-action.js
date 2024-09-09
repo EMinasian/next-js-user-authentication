@@ -2,7 +2,7 @@
 import { redirect } from 'next/navigation'
 import { createUser, getUserByEmail } from '../lib/user';
 import { hashUserPassword, verifyPassword } from '@/lib/hash';
-import { createAuthSession } from '@/lib/auth';
+import { createAuthSession, destroySession } from '@/lib/auth';
 
 async function registerationAction(currentState, formData) {
     const errors = {}
@@ -66,3 +66,8 @@ export default async function authAction(mode, currentState, formData) {
         return registerationAction(currentState, formData)
     }
 }
+
+export async function logout() {
+    await destroySession()
+    redirect('/')
+}  
