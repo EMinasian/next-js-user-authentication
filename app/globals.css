@@ -170,3 +170,20 @@ main {
   margin: 1rem;
   color: #7c7a80;
 }
+
+.header-component {
+  background-color: #a21d4c;
+  height: 36px;
+  padding-right: 16px;
+  display: flex;
+  flex-direction: row;
+  justify-content: end;
+  align-items: center;
+}
+
+.log-out-button {
+  background-color: white;
+  border: none;
+  height: 70%;
+  font-weight: 600;
+}
